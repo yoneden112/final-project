@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<!-- saved from url=(0178)file:///C:/Users/edenv/OneDrive/%D0%A0%D0%B0%D0%B1%D0%BE%D1%87%D0%B8%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB/%D7%99%D7%95%D7%A0%D7%AA%D7%9F%20%D7%95%D7%A2%D7%93%D7%9F/Capito%20Game.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capito game</title>
+    <style>
+        :root {
+            --sky-blue: #87CEEB;
+            --ocean-blue: #1E90FF;
+            --sand-color: #F4A460;
+            --sun-yellow: #FFD700;
+            --umbrella-color: #FF6347;
+            --stick-color: #8B4513;
+            --green: #4CAF50;
+            --font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--sky-blue);
+            font-family: var(--font-family);
+        }
+
+        .ocean, .sand, .sun {
+            position: absolute;
+            width: 100%;
+        }
+
+        .ocean {
+            bottom: 0;
+            height: 30%;
+            background-color: var(--ocean-blue);
+        }
+
+        .sand {
+            bottom: 30%;
+            height: 20%;
+            background-color: var(--sand-color);
+        }
+
+        .sun {
+            top: 10%;
+            left: 80%;
+            width: 100px;
+            height: 100px;
+            background-color: var(--sun-yellow);
+            border-radius: 50%;
+            box-shadow: 0 0 50px var(--sun-yellow);
+        }
+
+        .umbrella-group {
+            position: absolute;
+            bottom: 30%;
+            width: 70px;
+            height: 20%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .umbrella {
+            width: 70px;
+            height: 70px;
+            background-color: var(--umbrella-color);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+
+        .stick {
+            width: 2px;
+            height: 100px; /* Made the sticks longer */
+            background-color: var(--stick-color);
+        }
+
+        .score-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            font-size: 20px;
+            display: none;
+        }
+
+        .start-button {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 24px;
+            background-color: var(--green);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .capybara {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: url('https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg2ODc3OTEtaW1hZ2Utcm01MDMtbDBqOXJsYTkucG5n.png') no-repeat center center;
+            background-size: cover;
+            display: none;
+            z-index: 20; /* Higher z-index */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="score-panel" id="scorePanel">
+        Score: <span id="score">0</span><br>
+        Time: <span id="timeLeft">45</span>s
+    </div>
+    <button class="start-button" id="startButton">Start Game</button>
+    <div class="sun"></div>
+    <div class="sand"></div>
+    <div class="ocean"></div>
+    <div class="umbrella-group" style="left: 10%;">
+        <div class="umbrella"></div>
+        <div class="stick"></div>
+    </div>
+    <div class="umbrella-group" style="left: 30%;">
+        <div class="umbrella"></div>
+        <div class="stick"></div>
+    </div>
+    <div class="umbrella-group" style="left: 50%;">
+        <div class="umbrella"></div>
+        <div class="stick"></div>
+    </div>
+    <div class="umbrella-group" style="left: 70%;">
+        <div class="umbrella"></div>
+        <div class="stick"></div>
+    </div>
+    <div class="capybara" id="capybara"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('startButton');
+            const scorePanel = document.getElementById('scorePanel');
+            const scoreElement = document.getElementById('score');
+            const timeLeftElement = document.getElementById('timeLeft');
+            const capybara = document.getElementById('capybara');
+            let score = 0;
+            let timeLeft = 45;
+            let timer;
+
+            startButton.addEventListener('click', startGame);
+            capybara.addEventListener('click', handleCapybaraClick);
+
+            function startGame() {
+                resetGame();
+                scorePanel.style.display = 'block';
+                startButton.style.display = 'none';
+                capybara.style.display = 'block';
+                moveCapybara();
+                timer = setInterval(updateTimer, 1000);
+            }
+
+            function updateTimer() {
+                timeLeft--;
+                timeLeftElement.textContent = timeLeft;
+                if (timeLeft === 0) {
+                    clearInterval(timer);
+                    alert(`Game Over! Your score: ${score}`);
+                    resetGame();
+                }
+            }
+
+            function resetGame() {
+                score = 0;
+                timeLeft = 45;
+                scoreElement.textContent = score;
+                timeLeftElement.textContent = timeLeft;
+                scorePanel.style.display = 'none';
+                startButton.style.display = 'block';
+                capybara.style.display = 'none';
+                clearInterval(timer);
+            }
+
+            function moveCapybara() {
+                const umbrellaGroups = document.querySelectorAll('.umbrella-group');
+                const randomGroup = umbrellaGroups[Math.floor(Math.random() * umbrellaGroups.length)];
+                const umbrellaRect = randomGroup.getBoundingClientRect();
+                const stickHeight = randomGroup.querySelector('.stick').clientHeight;
+                capybara.style.left = `${umbrellaRect.left + window.scrollX + (umbrellaRect.width - capybara.clientWidth) / 2}px`;
+                capybara.style.top = `${umbrellaRect.top + window.scrollY + (stickHeight - capybara.clientHeight) / 2 + 60}px`; // Position the capybara a little bit lower on the stick
+            }
+
+            function handleCapybaraClick() {
+                score++;
+                scoreElement.textContent = score;
+                moveCapybara();
+            }
+        });
+    </script>
+
+
+</body></html>
